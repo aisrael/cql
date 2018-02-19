@@ -1,3 +1,5 @@
+![Build status](https://travis-ci.org/aisrael/cql.svg?branch=develop)
+
 # cql
 
 CQL is a SQL toolkit for Crystal, inspired by Sequel for Ruby.
