@@ -1,14 +1,25 @@
 # A Database object
-class CQL::Database
-  def self.postgres(database_url)
-    PostgreSQL.new(database_url)
-  end
-
+abstract class CQL::Database
   getter :url
 
   def initialize(@url : String)
   end
 
+  abstract def table_exists?(table_name : String)
+
   class PostgreSQL < CQL::Database
+    def table_exists?(table_name : String)
+      with_db do |db|
+        1i64 == db.scalar("SELECT COUNT(table_name)
+        FROM information_schema.tables
+        WHERE table_schema='public' AND table_name='#{table_name}';").as(Int)
+      end
+    end
+  end
+
+  def with_db(&block : DB::Database -> T) : T forall T
+    DB.open(@url) do |db|
+      yield db
+    end
   end
 end
