@@ -8,6 +8,8 @@ unless ENV.has_key?("DATABASE_URL")
 end
 
 DATABASE_URL = ENV["DATABASE_URL"]
+puts "$DATABASE_URL => #{DATABASE_URL}"
+
 unless path = URI.parse(DATABASE_URL).path
   STDERR.puts %(Cannot parse path component of "#{DATABASE_URL}"!)
   exit 1
