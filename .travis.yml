@@ -1,7 +1,7 @@
 language: crystal
 env:
   global:
-    - DATABASE_URL=postgres://postgres@travis_ci_test/cql_test
+    - DATABASE_URL=postgres://postgres:@localhost/cql_test
 crystal:
   - latest
 services:
