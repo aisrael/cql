@@ -1,1 +1,7 @@
 language: crystal
+crystal:
+  - latest
+before_script:
+  - shards
+script:
+  - crystal spec

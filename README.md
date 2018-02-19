@@ -1,6 +1,6 @@
 # cql
 
-TODO: Write a description here
+CQL is a SQL toolkit for Crystal, inspired by Sequel for Ruby.
 
 ## Installation
 
@@ -18,7 +18,11 @@ dependencies:
 require "cql"
 ```
 
-TODO: Write usage instructions here
+### Connect to a PostgreSQL database
+
+```crystal
+db = DB.postgres(DATABASE_URL)
+```
 
 ## Development
 
