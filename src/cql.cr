@@ -1,8 +1,5 @@
-require "./cql/*"
-
 # A SQL toolkit for Crystal
 module CQL
-
   private DATABASE_URL_KEY = "DATABASE_URL"
 
   # Returns a CQL::Database::PostgreSQL instance
@@ -10,3 +7,6 @@ module CQL
     CQL::Database::PostgreSQL.new(database_url)
   end
 end
+
+require "./cql/*"
+require "./cql/command/*"

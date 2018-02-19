@@ -7,6 +7,10 @@ abstract class CQL::Database
 
   abstract def table_exists?(table_name : String)
 
+  def create_table(table_name : String) : CQL::Command::CreateTable
+    CQL::Command::CreateTable.new(table_name)
+  end
+
   class PostgreSQL < CQL::Database
     def table_exists?(table_name : String)
       with_db do |db|
