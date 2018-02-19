@@ -7,3 +7,12 @@ authors:
 crystal: 0.24.1
 
 license: MIT
+
+dependencies:
+  logging:
+    github: aisrael/logging.cr
+    version: 0.1
+
+development_dependencies:
+  pg:
+    github: will/crystal-pg
