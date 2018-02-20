@@ -26,6 +26,18 @@ require "cql"
 db = DB.postgres(DATABASE_URL)
 ```
 
+#### Create Table
+
+```crystal
+db.create_table("foobar").column("id", "INTEGER").exec
+```
+
+#### Insert
+
+```crystal
+db.insert("foobar").column("id").exec(123)
+```
+
 ## Development
 
 TODO: Write development instructions here

@@ -19,7 +19,13 @@ struct CQL::Command::CreateTable < CQL::Command
     )
     self
   end
-
+  def exec
+    sql = self.to_s
+    debug sql
+    @database.with_db do |db|
+      db.exec(self.to_s)
+    end
+  end
   # TODO: Move to CQL::Dialect?
   def to_s(io)
     io << "CREATE TABLE #{table_name} ("
