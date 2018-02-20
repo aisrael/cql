@@ -1,9 +1,10 @@
-struct CQL::Command::CreateTable
+struct CQL::Command::CreateTable < CQL::Command
   getter :table_name
   getter :columns
 
   @columns = [] of CQL::Column
-  def initialize(@table_name : String)
+  def initialize(@database : CQL::Database, @table_name : String)
+    super(@database)
   end
   def column(name : String,
     type : String,
@@ -19,6 +20,7 @@ struct CQL::Command::CreateTable
     self
   end
 
+  # TODO: Move to CQL::Dialect?
   def to_s(io)
     io << "CREATE TABLE #{table_name} ("
     io << columns.map do |column|

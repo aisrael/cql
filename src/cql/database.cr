@@ -1,24 +1,19 @@
-# A Database object
+# An abstract Database object
 abstract class CQL::Database
   getter :url
+  getter :dialect
 
-  def initialize(@url : String)
+  def initialize(@dialect : CQL::Dialect, @url : String)
   end
 
   abstract def table_exists?(table_name : String)
 
   def create_table(table_name : String) : CQL::Command::CreateTable
-    CQL::Command::CreateTable.new(table_name)
+    CQL::Command::CreateTable.new(self, table_name)
   end
 
-  class PostgreSQL < CQL::Database
-    def table_exists?(table_name : String)
-      with_db do |db|
-        1i64 == db.scalar("SELECT COUNT(table_name)
-        FROM information_schema.tables
-        WHERE table_schema='public' AND table_name='#{table_name}';").as(Int)
-      end
-    end
+  def insert(table_name : String) : CQL::Command::Insert
+    CQL::Command::Insert.new(self, table_name)
   end
 
   def with_db(&block : DB::Database -> T) : T forall T

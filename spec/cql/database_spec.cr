@@ -31,4 +31,26 @@ describe CQL::Database do
       result.should be_a(CQL::Command::CreateTable)
     end
   end
+
+  describe "#insert" do
+    it "returns a CQL::Command::Insert" do
+      db = CQL.postgres
+      result = db.insert("foobar")
+      result.should be_a(CQL::Command::Insert)
+    end
+    it "works" do
+      DB.open(DATABASE_URL) do |db|
+        db.exec("CREATE TABLE foobar (id INTEGER);")
+      end
+
+      db = CQL.postgres
+      exec_result = db.insert("foobar").column("id").exec(123)
+      exec_result.should be_a(DB::ExecResult)
+      exec_result.rows_affected.should eq(1)
+    ensure
+      DB.open(DATABASE_URL) do |db|
+        db.exec("DROP TABLE IF EXISTS foobar;")
+      end
+    end
+  end
 end
