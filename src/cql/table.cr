@@ -19,15 +19,13 @@ class CQL::Table
     end
   end
 
-  # Add a SQL Column definition
+  # Add a CQL::Column definition
   def column(column : Column)
     @columns << column
   end
 
-  def column(*args)
-    column Column.new(*args)
-  end
+  # Add a new CQL::Column based on the arguments
   def column(*args, **options)
-    column Column.new(*args, **options)
+    column(Column.new(*args, **options))
   end
 end

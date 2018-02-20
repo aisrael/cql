@@ -14,7 +14,7 @@ struct CQL::Command::Insert < CQL::Command
     @column_names += column_names
     self
   end
-  def columns(*args)
+  def columns(*args : String)
     args.each do |arg|
       case arg
       when String
