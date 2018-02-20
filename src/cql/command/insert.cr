@@ -10,6 +10,28 @@ struct CQL::Command::Insert < CQL::Command
     @column_names << name
     self
   end
+  def columns(column_names : Array(String))
+    @column_names += column_names
+    self
+  end
+  def columns(*args)
+    args.each do |arg|
+      case arg
+      when String
+        @column_names << arg
+      else
+        raise "Don't know how to handle column name of type #{arg.class}!"
+      end
+    end
+    self
+  end
+  def exec(args : Array(U)) forall U
+    sql = self.to_s
+    debug sql
+    @database.with_db do |db|
+      db.exec(self.to_s, args)
+    end
+  end
   def exec(*args)
     sql = self.to_s
     debug sql

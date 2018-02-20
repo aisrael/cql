@@ -2,10 +2,16 @@ struct CQL::Command::CreateTable < CQL::Command
   getter :table_name
   getter :columns
 
-  @columns = [] of CQL::Column
   def initialize(@database : CQL::Database, @table_name : String)
     super(@database)
+    @columns = [] of CQL::Column
   end
+
+  def initialize(@database : CQL::Database, table : CQL::Table)
+    @table_name = table.name
+    @columns = table.columns
+  end
+
   def column(name : String,
     type : String,
     size : Int32? = nil,
