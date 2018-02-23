@@ -19,7 +19,13 @@ module CQL
   # Currently only supports "postgres://"
   def self.connect(database_url : String = ENV[DATABASE_URL_KEY]) : CQL::Database
     uri = URI.parse(database_url)
-    KNOWN_DATABASES[uri.scheme].new(database_url)
+    scheme = uri.scheme
+    if scheme.nil?
+      raise Exception.new "Database URL scheme is nil!"
+    elsif !KNOWN_DATABASES.has_key?(scheme)
+      raise Exception.new %(Unknown database scheme "#{scheme}")
+    end
+    KNOWN_DATABASES[scheme].new(database_url)
   end
 
   # Returns a CQL::Database::PostgreSQL instance

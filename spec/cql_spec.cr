@@ -14,4 +14,14 @@ describe CQL do
       db.url.should eq(ENV["DATABASE_URL"])
     end
   end
+  describe ".connect" do
+    it "raise an error if no scheme or unidentified scheme" do
+      expect_raises Exception, "Database URL scheme is nil!" do
+        CQL.connect("localhost")
+      end
+      expect_raises Exception, %(Unknown database scheme "oracle") do
+        CQL.connect("oracle://localhost")
+      end
+    end
+  end
 end
