@@ -1,3 +1,5 @@
+![Build status](https://travis-ci.org/aisrael/cql.svg?branch=develop)
+
 # cql
 
 CQL is a SQL toolkit for Crystal, inspired by Sequel for Ruby.
@@ -22,6 +24,18 @@ require "cql"
 
 ```crystal
 db = DB.postgres(DATABASE_URL)
+```
+
+#### Create Table
+
+```crystal
+db.create_table("foobar").column("id", "INTEGER").exec
+```
+
+#### Insert
+
+```crystal
+db.insert("foobar").column("id").exec(123)
 ```
 
 ## Development

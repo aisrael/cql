@@ -1,7 +1,15 @@
 language: crystal
+env:
+  global:
+    - DATABASE_URL=postgres://postgres:@localhost/cql_test
 crystal:
   - latest
+services:
+  - postgresql
+addons:
+  postgresql: "9.6"
 before_script:
+  - psql -c 'create database cql_test;' -U postgres
   - shards
 script:
   - crystal spec
