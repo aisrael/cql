@@ -1,3 +1,5 @@
+require "db"
+
 # An abstract Database object
 abstract class CQL::Database
   getter :url
@@ -20,12 +22,9 @@ abstract class CQL::Database
     CQL::Command::Insert.new(self, table_name)
   end
 
-  private def query(sql, &block)
+  def exec(sql, *args) : DB::ExecResult
     with_db do |db|
-      debug sql
-      db.query(sql) do |rs|
-        yield rs
-      end
+      db.exec(sql, *args)
     end
   end
 
