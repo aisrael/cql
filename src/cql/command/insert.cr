@@ -41,5 +41,6 @@ struct CQL::Command::Insert < CQL::Command
   end
   def to_s(io)
     @database.dialect.insert_statement(io, table_name, column_names)
+    io << ";"
   end
 end
