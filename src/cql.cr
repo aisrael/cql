@@ -4,12 +4,16 @@ require "uri"
 module CQL
   private DATABASE_URL_KEY = "DATABASE_URL"
 
+  # Value types
+  alias Type = Int8 | Int32 | Int64 | String
+
   # Column types
-  # TODO: Make a type or enum
-  CHAR = "CHAR"
-  SERIAL = "SERIAL"
-  TIMESTAMP = "TIMESTAMP"
-  VARCHAR = "VARCHAR"
+  enum ColumnType
+    CHAR
+    SERIAL
+    TIMESTAMP
+    VARCHAR
+  end
 
   KNOWN_DATABASES = {
     "postgres" => CQL::Database::PostgreSQL

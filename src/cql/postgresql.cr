@@ -24,9 +24,17 @@ class CQL::Dialect::PostgreSQL < CQL::Dialect
   # The "singleton" instance
   INSTANCE = CQL::Dialect::PostgreSQL.new
 
-  # Override the default implementation in CQL::Dialect
+  # Concrete implementation of the one in CQL::Dialect
   def value_placeholders_for(column_names : Array(String))
-    column_names.size.times.map { |i| "$#{i + 1}"}
+    column_names.size.times.map do |i|
+      "$#{i + 1}"
+    end.to_a
   end
 
+  # Concrete implementation of the one in CQL::Dialect
+  def column_equals_placeholders_for(column_names : ColumnNames, start_at = 1)
+    column_names.map_with_index do |s, i|
+      "#{s} = $#{i + start_at}"
+    end
+  end
 end
