@@ -16,7 +16,7 @@ struct CQL::Command::CreateTable < CQL::Command
   end
 
   def column(name : String,
-    type : String,
+    type : CQL::ColumnType,
     size : Int32? = nil,
     null : Bool? = nil,
     unique : Bool? = nil)

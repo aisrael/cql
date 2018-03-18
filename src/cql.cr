@@ -9,11 +9,19 @@ module CQL
 
   # Column types
   enum ColumnType
+    BOOLEAN
     CHAR
+    INTEGER
     SERIAL
     TIMESTAMP
     VARCHAR
   end
+  BOOLEAN = ColumnType::BOOLEAN
+  CHAR = ColumnType::CHAR
+  INTEGER = ColumnType::INTEGER
+  SERIAL = ColumnType::SERIAL
+  TIMESTAMP = ColumnType::TIMESTAMP
+  VARCHAR = ColumnType::VARCHAR
 
   KNOWN_DATABASES = {
     "postgres" => CQL::Database::PostgreSQL
