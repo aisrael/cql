@@ -22,10 +22,12 @@ class CQL::Table
   # Add a CQL::Column definition
   def column(column : Column)
     @columns << column
+    self
   end
 
   # Add a new CQL::Column based on the arguments
   def column(*args, **options)
     column(Column.new(*args, **options))
+    self
   end
 end

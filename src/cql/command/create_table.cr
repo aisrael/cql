@@ -11,7 +11,6 @@ struct CQL::Command::CreateTable < CQL::Command
 
   def initialize(@database : CQL::Database, table : CQL::Table)
     initialize(@database, table.name)
-    @table_name = table.name
     @columns = table.columns
   end
 
