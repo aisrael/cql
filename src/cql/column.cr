@@ -3,7 +3,7 @@ require "yaml"
 struct CQL::Column
   YAML.mapping(
     name: String,
-    type: String,
+    type: CQL::ColumnType,
     size: Int32?,
     null: Bool?,
     primary_key: Bool?,
@@ -12,7 +12,7 @@ struct CQL::Column
     references: String?
   )
   def initialize(@name : String,
-                 @type : String,
+                 @type : CQL::ColumnType,
                  @size : Int32? = nil,
                  @null : Bool? = nil,
                  @primary_key : Bool? = nil,
@@ -23,12 +23,12 @@ struct CQL::Column
   def to_s(io)
     parts = [@name]
     case @type
-    when "CHAR", "VARCHAR"
+    when CHAR, VARCHAR
       if @size
         parts << "#{@type}(#{@size})"
       end
     else
-      parts << @type
+      parts << @type.to_s
     end
     unless @null.nil?
       parts << "NOT" unless @null

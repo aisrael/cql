@@ -9,14 +9,23 @@ module CQL
 
   # Column types
   enum ColumnType
+    BOOLEAN
     CHAR
+    INTEGER
     SERIAL
     TIMESTAMP
     VARCHAR
   end
+  BOOLEAN = ColumnType::BOOLEAN
+  CHAR = ColumnType::CHAR
+  INTEGER = ColumnType::INTEGER
+  SERIAL = ColumnType::SERIAL
+  TIMESTAMP = ColumnType::TIMESTAMP
+  VARCHAR = ColumnType::VARCHAR
 
   KNOWN_DATABASES = {
-    "postgres" => CQL::Database::PostgreSQL
+    "postgres" => CQL::Database::PostgreSQL,
+    "postgresql" => CQL::Database::PostgreSQL
   }
 
   # Returns a CQL::Database instance based on the URL scheme
@@ -27,7 +36,7 @@ module CQL
     if scheme.nil?
       raise Exception.new "Database URL scheme is nil!"
     elsif !KNOWN_DATABASES.has_key?(scheme)
-      raise Exception.new %(Unknown database scheme "#{scheme}")
+      raise Exception.new %(Unknown database scheme "#{scheme}"! Migro currently only supports "postgres://" or "postgresql://")
     end
     KNOWN_DATABASES[scheme].new(database_url)
   end

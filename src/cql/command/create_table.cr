@@ -11,12 +11,11 @@ struct CQL::Command::CreateTable < CQL::Command
 
   def initialize(@database : CQL::Database, table : CQL::Table)
     initialize(@database, table.name)
-    @table_name = table.name
     @columns = table.columns
   end
 
   def column(name : String,
-    type : String,
+    type : CQL::ColumnType,
     size : Int32? = nil,
     null : Bool? = nil,
     unique : Bool? = nil)

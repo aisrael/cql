@@ -32,7 +32,7 @@ describe CQL::Database do
     end
     it "works" do
       db = CQL.postgres
-      result = db.create_table("foobar").column("id", "INTEGER").exec
+      result = db.create_table("foobar").column("id", CQL::INTEGER).exec
       result.should be_a(DB::ExecResult)
       db.table_exists?("foobar").should be_true
     ensure
