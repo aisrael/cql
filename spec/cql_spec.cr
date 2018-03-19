@@ -15,11 +15,15 @@ describe CQL do
     end
   end
   describe ".connect" do
+    it %(supports "postgres" or "postgresql") do
+      CQL.connect("postgres://username:password@host/database").should be_a(CQL::Database::PostgreSQL)
+      CQL.connect("postgresql://username:password@host/database").should be_a(CQL::Database::PostgreSQL)
+    end
     it "raise an error if no scheme or unidentified scheme" do
       expect_raises Exception, "Database URL scheme is nil!" do
         CQL.connect("localhost")
       end
-      expect_raises Exception, %(Unknown database scheme "oracle") do
+      expect_raises Exception, %(Unknown database scheme "oracle"! Migro currently only supports "postgres://" or "postgresql://") do
         CQL.connect("oracle://localhost")
       end
     end
