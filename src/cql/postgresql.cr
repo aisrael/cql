@@ -8,7 +8,7 @@ class CQL::Database::PostgreSQL < CQL::Database
     super(CQL::Dialect::PostgreSQL::INSTANCE, @url)
   end
 
-  def table_exists?(table_name : String)
+  def table_exists?(table_name : String) : Bool
     with_db do |db|
       1i64 == db.scalar("SELECT COUNT(table_name)
       FROM information_schema.tables

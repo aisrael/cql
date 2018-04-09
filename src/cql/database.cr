@@ -8,7 +8,7 @@ abstract class CQL::Database
   def initialize(@dialect : CQL::Dialect, @url : String)
   end
 
-  abstract def table_exists?(table_name : String)
+  abstract def table_exists?(table_name : String) : Bool
 
   def create_table(table : CQL::Table) : CQL::Command::CreateTable
     CQL::Command::CreateTable.new(self, table)
