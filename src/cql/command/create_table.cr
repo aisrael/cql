@@ -30,9 +30,7 @@ struct CQL::Command::CreateTable < CQL::Command
   def exec
     sql = to_s
     debug sql
-    @database.with_db do |db|
-      db.exec(sql)
-    end
+    @database.exec(sql)
   end
 
   # TODO: Move to CQL::Dialect?

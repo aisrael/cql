@@ -5,7 +5,20 @@ abstract class CQL::Database
   getter :url
   getter :dialect
 
+  @db : DB::Database?
+
   def initialize(@dialect : CQL::Dialect, @url : String)
+  end
+
+  def db
+    @db ||= DB.open(@url)
+  end
+
+  def close
+    if d = @db
+      d.close
+      @db = nil
+    end
   end
 
   abstract def table_exists?(table_name : String) : Bool
@@ -22,23 +35,21 @@ abstract class CQL::Database
     CQL::Command::Insert.new(self, table_name)
   end
 
+  def count(table_name : String) : CQL::Command::Count
+    CQL::Command::Count.new(self, table_name)
+  end
+
   def exec(sql, *args) : DB::ExecResult
-    with_db do |db|
-      db.exec(sql, *args)
-    end
+    db.exec(sql, *args)
+  end
+
+  def scalar(sql, *args)
+    db.scalar(sql, *args)
   end
 
   def query_all(sql, &block : DB::ResultSet -> U) : Array(U) forall U
-    with_db do |db|
-      db.query_all(sql) do |rs|
-        yield rs
-      end
-    end
-  end
-
-  def with_db(&block : DB::Database -> T) : T forall T
-    DB.open(@url) do |db|
-      yield db
+    db.query_all(sql) do |rs|
+      yield rs
     end
   end
 end

@@ -28,16 +28,12 @@ struct CQL::Command::Insert < CQL::Command
   def exec(args : Array(U)) forall U
     sql = self.to_s
     debug sql
-    @database.with_db do |db|
-      db.exec(self.to_s, args)
-    end
+    @database.exec(self.to_s, args)
   end
   def exec(*args)
     sql = self.to_s
     debug sql
-    @database.with_db do |db|
-      db.exec(self.to_s, *args)
-    end
+    @database.exec(self.to_s, *args)
   end
   def to_s(io)
     @database.dialect.insert_statement(io, table_name, column_names)
