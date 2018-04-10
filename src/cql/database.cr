@@ -31,6 +31,10 @@ abstract class CQL::Database
     CQL::Command::CreateTable.new(self, table_name)
   end
 
+  def delete_table(table : CQL::Table) : CQL::Command::DeleteTable
+    CQL::Command::DeleteTable.new(self, table)
+  end
+
   def insert(table_name : String) : CQL::Command::Insert
     CQL::Command::Insert.new(self, table_name)
   end
