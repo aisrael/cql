@@ -18,6 +18,6 @@ struct CQL::Command::DeleteTable < CQL::Command
 
   # TODO: Move to CQL::Dialect
   def to_s(io)
-    io << "DELETE TABLE #{table_name};"
+    io << "DROP TABLE #{table_name};"
   end
 end
