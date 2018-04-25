@@ -16,6 +16,8 @@ describe CQL::Table do
         "null": false
       - name: activated
         type: BOOLEAN
+        "null": false
+        default: "false"
     YAML
     yaml = YAML.parse(text)
     table = CQL::Table.from_yaml(yaml["create_table"])

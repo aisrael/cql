@@ -1,4 +1,4 @@
-require "../spec_helper"
+require "../db_helper"
 
 describe CQL::Database do
   describe "#table_exists?" do

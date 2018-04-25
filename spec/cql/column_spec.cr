@@ -41,4 +41,28 @@ describe CQL::Column do
     column = CQL::Column.new("refrences_other_code", CQL::CHAR, size: 8, references: "other(code)")
     column.to_s.should eq("refrences_other_code CHAR(8) REFERENCES other(code)")
   end
+  describe "#from_yaml" do
+    it "can handle BOOLEAN types" do
+      s = <<-YAML
+      name: disabled
+      type: BOOLEAN
+      YAML
+      column = CQL::Column.from_yaml(s)
+      column.name.should eq("disabled")
+      column.type.should eq(CQL::BOOLEAN)
+    end
+    it "can handle not null BOOLEAN types with defaults" do
+      s = <<-YAML
+      name: disabled
+      "null": false
+      type: BOOLEAN
+      default: "false"
+      YAML
+      column = CQL::Column.from_yaml(s)
+      column.name.should eq("disabled")
+      column.type.should eq(CQL::BOOLEAN)
+      column.null.should be_false
+      column.default.should eq("false")
+    end
+  end
 end
