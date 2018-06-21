@@ -16,3 +16,4 @@ dependencies:
 development_dependencies:
   pg:
     github: will/crystal-pg
+    version: 0.15.0
