@@ -1,3 +1,3 @@
 module CQL
-  VERSION = "0.1.10"
+  VERSION = {{ `cat ./shard.yml|awk '/^version:/ {print $2}'`.stringify }}
 end
