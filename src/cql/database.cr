@@ -1,7 +1,10 @@
 require "db"
+require "logging"
 
 # An abstract Database object
 abstract class CQL::Database
+  include Logging
+
   getter :url
   getter :dialect
 
@@ -44,6 +47,7 @@ abstract class CQL::Database
   end
 
   def exec(sql, *args) : DB::ExecResult
+    debug(sql)
     db.exec(sql, *args)
   end
 

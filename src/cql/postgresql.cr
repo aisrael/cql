@@ -2,8 +2,6 @@ require "logging"
 
 # A concrete implementation of CQL::Database for PostgreSQL
 class CQL::Database::PostgreSQL < CQL::Database
-  include Logging
-
   def initialize(@url : String)
     super(CQL::Dialect::PostgreSQL::INSTANCE, @url)
   end

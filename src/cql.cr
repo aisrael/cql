@@ -1,5 +1,4 @@
 require "uri"
-
 # A SQL toolkit for Crystal
 module CQL
   private DATABASE_URL_KEY = "DATABASE_URL"
@@ -36,7 +35,7 @@ module CQL
     if scheme.nil?
       raise Exception.new "Database URL scheme is nil!"
     elsif !KNOWN_DATABASES.has_key?(scheme)
-      raise Exception.new %(Unknown database scheme "#{scheme}"! Migro currently only supports "postgres://" or "postgresql://")
+      raise Exception.new %(Unknown database scheme "#{scheme}"! CQL currently only supports "postgres://" or "postgresql://")
     end
     KNOWN_DATABASES[scheme].new(database_url)
   end
