@@ -7,8 +7,8 @@ describe CQL::Database do
         db.exec("CREATE TABLE foobar (id INTEGER);")
       end
 
-      db = CQL.postgres
-      db.table_exists?("foobar").should be_true
+      pg = CQL.postgres
+      pg.table_exists?("foobar").should be_true
     ensure
       DB.open(DATABASE_URL) do |db|
         db.exec("DROP TABLE IF EXISTS foobar;")
@@ -19,8 +19,8 @@ describe CQL::Database do
       DB.open(DATABASE_URL) do |db|
         db.exec("DROP TABLE IF EXISTS foobar;")
       end
-      db = CQL.postgres
-      db.table_exists?("foobar").should be_false
+      pg = CQL.postgres
+      pg.table_exists?("foobar").should be_false
     end
   end
 
@@ -31,10 +31,10 @@ describe CQL::Database do
       result.should be_a(CQL::Command::CreateTable)
     end
     it "works" do
-      db = CQL.postgres
-      result = db.create_table("foobar").column("id", CQL::INTEGER).exec
+      pg = CQL.postgres
+      result = pg.create_table("foobar").column("id", CQL::INTEGER).exec
       result.should be_a(DB::ExecResult)
-      db.table_exists?("foobar").should be_true
+      pg.table_exists?("foobar").should be_true
     ensure
       DB.open(DATABASE_URL) do |db|
         db.exec("DROP TABLE IF EXISTS foobar;")
@@ -53,8 +53,8 @@ describe CQL::Database do
         db.exec("CREATE TABLE foobar (id INTEGER);")
       end
 
-      db = CQL.postgres
-      result = db.insert("foobar").column("id").exec(123)
+      pg = CQL.postgres
+      result = pg.insert("foobar").column("id").exec(123)
       result.should be_a(DB::ExecResult)
       result.rows_affected.should eq(1)
       DB.open(DATABASE_URL) do |db|
