@@ -21,7 +21,7 @@ class CQL::Dialect::PostgreSQL < CQL::Dialect
   INSTANCE = CQL::Dialect::PostgreSQL.new
 
   # Concrete implementation of the one in CQL::Dialect
-  def value_placeholders_for(column_names : Array(String))
+  def value_placeholders_for(column_names : ColumnNames)
     column_names.size.times.map do |i|
       "$#{i + 1}"
     end.to_a
