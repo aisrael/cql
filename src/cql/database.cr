@@ -55,6 +55,14 @@ abstract class CQL::Database
     db.scalar(sql, *args)
   end
 
+  def query_one(sql, *args, &block : DB::ResultSet -> U) : U forall U
+    db.query_one(sql, *args, &block)
+  end
+
+  def query_one?(sql, *args, &block : DB::ResultSet -> U) : U | Nil forall U
+    db.query_one?(sql, *args, &block)
+  end
+
   def query_all(sql, &block : DB::ResultSet -> U) : Array(U) forall U
     db.query_all(sql) do |rs|
       yield rs

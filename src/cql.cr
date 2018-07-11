@@ -15,6 +15,7 @@ module CQL
     CHAR
     INTEGER
     SERIAL
+    SMALLINT
     TIMESTAMP
     VARCHAR
   end
@@ -22,6 +23,7 @@ module CQL
   CHAR = ColumnType::CHAR
   INTEGER = ColumnType::INTEGER
   SERIAL = ColumnType::SERIAL
+  SMALLINT = ColumnType::SMALLINT
   TIMESTAMP = ColumnType::TIMESTAMP
   VARCHAR = ColumnType::VARCHAR
 
