@@ -42,6 +42,10 @@ abstract class CQL::Database
     CQL::Command::Insert.new(self, table_name)
   end
 
+  def update(table_name : String) : CQL::Command::Update
+    CQL::Command::Update.new(self, table_name)
+  end
+
   def count(table_name : String) : CQL::Command::Count
     CQL::Command::Count.new(self, table_name)
   end

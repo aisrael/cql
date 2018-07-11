@@ -1,4 +1,5 @@
-struct CQL::Command::Count < CQL::CommandWithWhereClause
+struct CQL::Command::Count < CQL::Command
+  include CQL::Command::WithWhereClause
   getter :table_name
 
   VALID_TABLE_NAME_PATTERN = /^[[:alpha:]][[:alpha:]0-9_]+$/

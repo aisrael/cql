@@ -4,8 +4,8 @@ abstract class CQL::Dialect
   VALID_TABLE_NAME_PATTERN = /^[[:alpha:]][[:alpha:]0-9_]+$/
 
   SUPPORTED_DIALECTS = {
-    "postgres" => CQL::Dialect::PostgreSQL.INSTANCE,
-    "postgresql" => CQL::Dialect::PostgreSQL.INSTANCE
+    "postgres" => CQL::Dialect::PostgreSQL::INSTANCE,
+    "postgresql" => CQL::Dialect::PostgreSQL::INSTANCE
   }
 
   # Returns a CQL::Dialect instance based on the URL scheme in ENV["DATABASE_URL"]
@@ -34,6 +34,7 @@ abstract class CQL::Dialect
     table_name =~ VALID_TABLE_NAME_PATTERN
   end
 
+  # TODO: Make abstract?
   def insert_statement(io : IO, table_name : String, column_names : ColumnNames)
     io << "INSERT INTO "
     io << table_name
@@ -44,9 +45,13 @@ abstract class CQL::Dialect
     io << ")"
   end
 
-  abstract def value_placeholders_for(column_names : ColumnNames)
-
-  abstract def column_equals_placeholders_for(column_names : ColumnNames, start_at = 1)
+  # TODO: Make abstract?
+  def update_statement(io : IO, table_name : String, column_names : ColumnNames)
+    io << "UPDATE "
+    io << table_name
+    io << " SET "
+    io << column_equals_placeholders_for(column_names).join(", ")
+  end
 
   def update_statement(io : IO, table_name : String, set : ColumnNames, where : ColumnNames)
     io << "UPDATE "
@@ -57,6 +62,10 @@ abstract class CQL::Dialect
     io << " WHERE "
     io << column_equals_placeholders_for(where, set.size).join(" AND ")
   end
+
+  abstract def value_placeholders_for(column_names : ColumnNames)
+
+  abstract def column_equals_placeholders_for(column_names : ColumnNames, start_at = 1)
 
   def delete_statement(io : IO, table_name : String, where : ColumnNames)
     io << "DELETE FROM "
