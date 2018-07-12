@@ -38,6 +38,9 @@ abstract class CQL::Database
     CQL::Command::DeleteTable.new(self, table)
   end
 
+  def select_one(table_name : String) : CQL::Command::SelectOne
+  end
+
   def insert(table_name : String) : CQL::Command::Insert
     CQL::Command::Insert.new(self, table_name)
   end
@@ -59,17 +62,18 @@ abstract class CQL::Database
     db.scalar(sql, *args)
   end
 
+  # Directly query for one record and map it (really just delegates to the internal @db)
   def query_one(sql, *args, &block : DB::ResultSet -> U) : U forall U
     db.query_one(sql, *args, &block)
   end
 
+  # Directly query for zero or one records and map it (really just delegates to the internal @db)
   def query_one?(sql, *args, &block : DB::ResultSet -> U) : U | Nil forall U
     db.query_one?(sql, *args, &block)
   end
 
+  # Directly query for one record and map it (really just delegates to the internal @db)
   def query_all(sql, &block : DB::ResultSet -> U) : Array(U) forall U
-    db.query_all(sql) do |rs|
-      yield rs
-    end
+    db.query_all(sql, &block)
   end
 end

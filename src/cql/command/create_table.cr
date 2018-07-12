@@ -36,9 +36,7 @@ struct CQL::Command::CreateTable < CQL::Command
   # TODO: Move to CQL::Dialect?
   def to_s(io)
     io << "CREATE TABLE #{table_name} ("
-    io << columns.map do |column|
-      column.to_s
-    end.join(", ")
+    io << columns.map(&.to_s).join(", ")
     io << ");"
   end
 end

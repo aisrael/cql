@@ -53,14 +53,16 @@ abstract class CQL::Dialect
     io << column_equals_placeholders_for(column_names).join(", ")
   end
 
-  def update_statement(io : IO, table_name : String, set : ColumnNames, where : ColumnNames)
-    io << "UPDATE "
-    io << table_name
-    io << " SET "
-    io << column_equals_placeholders_for(set).join(", ")
+  def update_statement(io : IO, table_name : String, column_names : ColumnNames, where : ColumnNames)
+    io << "UPDATE " << table_name << " SET " << column_equals_placeholders_for(column_names).join(", ")
     return if where.empty?
-    io << " WHERE "
-    io << column_equals_placeholders_for(where, set.size).join(" AND ")
+    io << " WHERE " << column_equals_placeholders_for(where, column_names.size).join(" AND ")
+  end
+
+  def select_statement(io : IO, table_name : String, column_names : ColumnNames, where : ColumnNames)
+    io << "SELECT " << column_names.join(", ") << " FROM " << table_name
+    return if where.empty?
+    io << " WHERE " << column_equals_placeholders_for(where).join(" AND ")
   end
 
   abstract def value_placeholders_for(column_names : ColumnNames)
