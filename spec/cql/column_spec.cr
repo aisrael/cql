@@ -38,7 +38,48 @@ describe CQL::Column do
     column.to_s.should eq("pk INTEGER PRIMARY KEY")
   end
   it "handles references" do
-    column = CQL::Column.new("refrences_other_code", CQL::CHAR, size: 8, references: "other(code)")
-    column.to_s.should eq("refrences_other_code CHAR(8) REFERENCES other(code)")
+    column = CQL::Column.new("references_other_code", CQL::CHAR, size: 8, references: "other(code)")
+    column.to_s.should eq("references_other_code CHAR(8) REFERENCES other(code)")
+  end
+  it "handles references and defaults to table(id)" do
+    column = CQL::Column.new("references_other_id", CQL::INTEGER, references: "other")
+    column.to_s.should eq("references_other_id INTEGER REFERENCES other(id)")
+  end
+  describe "#from_yaml" do
+    it "can handle BOOLEAN types" do
+      s = <<-YAML
+      name: disabled
+      type: BOOLEAN
+      YAML
+      column = CQL::Column.from_yaml(s)
+      column.name.should eq("disabled")
+      column.type.should eq(CQL::BOOLEAN)
+    end
+    it "can handle not null BOOLEAN types with defaults" do
+      s = <<-YAML
+      name: disabled
+      type: BOOLEAN
+      "null": false
+      default: "false"
+      YAML
+      column = CQL::Column.from_yaml(s)
+      column.name.should eq("disabled")
+      column.type.should eq(CQL::BOOLEAN)
+      column.null.should be_false
+      column.default.should eq("false")
+    end
+    it "can handle references" do
+      s = <<-YAML
+      name: property_id
+      type: INTEGER
+      null: false
+      references: properties
+      YAML
+      column = CQL::Column.from_yaml(s)
+      column.name.should eq("property_id")
+      column.type.should eq(CQL::INTEGER)
+      column.null.should be_false
+      column.references.should eq("properties")
+    end
   end
 end

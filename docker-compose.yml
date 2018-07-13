@@ -1,0 +1,11 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:9.6
+    network_mode: bridge
+    environment:
+      - POSTGRES_USER=cql
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=cql
+    ports:
+      - 5430:5432

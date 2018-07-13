@@ -1,10 +1,10 @@
 name: cql
-version: 0.1.9
+version: 0.2.2
 
 authors:
   - Alistair A. Israel <aisrael@gmail.com>
 
-crystal: 0.24.1
+crystal: 0.25.1
 
 license: MIT
 
@@ -16,3 +16,4 @@ dependencies:
 development_dependencies:
   pg:
     github: will/crystal-pg
+    version: 0.15.0

@@ -8,7 +8,7 @@ struct CQL::Column
     null: Bool?,
     primary_key: Bool?,
     unique: Bool?,
-    default: String?,
+    default: CQL::Type?,
     references: String?
   )
   def initialize(@name : String,
@@ -17,7 +17,7 @@ struct CQL::Column
                  @null : Bool? = nil,
                  @primary_key : Bool? = nil,
                  @unique : Bool? = nil,
-                 @default : String? = nil,
+                 @default : CQL::Type? = nil,
                  @references : String? = nil)
   end
   def to_s(io)
@@ -43,8 +43,10 @@ struct CQL::Column
     unless @default.nil?
       parts << "DEFAULT #{@default}"
     end
-    unless @references.nil?
-      parts << "REFERENCES #{@references}"
+    references = @references
+    unless references.nil?
+      fk = references =~ /\(.+\)$/ ? references : references + "(id)"
+      parts << "REFERENCES #{fk}"
     end
     io << parts.join(" ")
   end

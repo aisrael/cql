@@ -23,7 +23,7 @@ describe CQL do
       expect_raises Exception, "Database URL scheme is nil!" do
         CQL.connect("localhost")
       end
-      expect_raises Exception, %(Unknown database scheme "oracle"! Migro currently only supports "postgres://" or "postgresql://") do
+      expect_raises Exception, %(Unknown database scheme "oracle"! CQL currently only supports "postgres://" or "postgresql://") do
         CQL.connect("oracle://localhost")
       end
     end
