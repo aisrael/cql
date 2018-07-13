@@ -25,12 +25,12 @@ struct CQL::Command::Insert < CQL::Command
     end
     self
   end
-  def exec(args : Array(U)) forall U
+  def exec(args : Array(U)) : Nil forall U
     sql = self.to_s
     debug sql
     @database.exec(self.to_s, args)
   end
-  def exec(*args)
+  def exec(*args) : Nil
     sql = self.to_s
     debug sql
     @database.exec(self.to_s, *args)
