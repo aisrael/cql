@@ -2,8 +2,9 @@ require "./column"
 
 class CQL::Table
   property :name
-  getter :columns
+  getter :columns, :constraints
   @columns = [] of Column
+  @constraints = [] of TableConstraint
 
   # Defines a new SQL Table with the given name
   def initialize(@name : String)
@@ -15,6 +16,11 @@ class CQL::Table
     Table.new(yaml["name"].as_s).tap do |table|
       yaml["columns"].as_a.each do |column|
         table.columns << CQL::Column.from_yaml(column.to_yaml)
+      end
+      if yaml["constraints"]?
+        yaml["constraints"].as_a.each do |constraint|
+          table.constraints << TableConstraint.from_yaml(constraint.to_yaml)
+        end
       end
     end
   end
@@ -29,5 +35,15 @@ class CQL::Table
   def column(*args, **options)
     column(Column.new(*args, **options))
     self
+  end
+
+  struct TableConstraint
+    YAML.mapping(
+      name: String,
+      unique: Array(String)?
+    )
+
+    def initialize(@name : String, @unique : Array(String) = [] of String)
+    end
   end
 end

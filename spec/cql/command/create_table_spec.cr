@@ -13,6 +13,13 @@ describe CQL::Command::CreateTable do
     sql = ct.to_s
     sql.should eq("CREATE TABLE foobar (id SERIAL);")
   end
+  it "accepts a CQL::Table with constraints" do
+    table = CQL::Table.new("users").column("property_id", CQL::INTEGER).column(name: "username", type: CQL::VARCHAR, size: 40)
+    table.constraints << CQL::Table::TableConstraint.new("uq_users_property_username", ["property_id", "username"])
+    ct = CQL::Command::CreateTable.new(CQL.postgres, table)
+    sql = ct.to_s
+    sql.should eq("CREATE TABLE users (property_id INTEGER, username VARCHAR(40), CONSTRAINT uq_users_property_username UNIQUE (property_id, username));")
+  end
   it "raises an ArgumentError if the table name is invalid" do
     expect_raises(ArgumentError) do
       CQL::Command::CreateTable.new(CQL.postgres, "")
