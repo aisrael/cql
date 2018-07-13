@@ -72,8 +72,8 @@ abstract class CQL::Database
     db.query_one?(sql, *args, &block)
   end
 
-  # Directly query for one record and map it (really just delegates to the internal @db)
-  def query_all(sql, &block : DB::ResultSet -> U) : Array(U) forall U
-    db.query_all(sql, &block)
+  # Directly query for multiple records and map them (really just delegates to the internal @db)
+  def query_all(sql, *args, &block : DB::ResultSet -> U) : Array(U) forall U
+    db.query_all(sql, *args, &block)
   end
 end
