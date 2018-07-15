@@ -16,7 +16,7 @@ end
 
 database_name = path.starts_with?("/") ? path[1..-1] : path
 
-url_without_path = ENV["DATABASE_URL"][0..-path.size-1]
+url_without_path = ENV["DATABASE_URL"][0..-path.size - 1]
 
 # TODO MySQL?
 DB.open(url_without_path) do |db|

@@ -12,11 +12,13 @@ struct CQL::Command::Update < CQL::Command
     debug sql
     @database.exec(self.to_s, args)
   end
+
   def exec(*args)
     sql = self.to_s
     debug sql
     @database.exec(self.to_s, *args)
   end
+
   def to_s(io)
     dialect = @database.dialect
     dialect.update_statement(io, table_name, column_names)

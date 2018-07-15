@@ -18,8 +18,8 @@ struct CQL::Command::Select < CQL::Command
 
   def where(**new_where)
     where = {} of (String | Symbol) => CQL::Type
-    @where.each {|k, v| where[k] = v}
-    new_where.each {|k, v| where[k] = v}
+    @where.each { |k, v| where[k] = v }
+    new_where.each { |k, v| where[k] = v }
     Select.new(@database, @table_name, @column_names, where)
   end
 

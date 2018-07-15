@@ -3,17 +3,21 @@ struct CQL::Command::Insert < CQL::Command
   getter :column_names
 
   @column_names = [] of String
+
   def initialize(@database : CQL::Database, @table_name : String)
     super(@database)
   end
+
   def column(name : String)
     @column_names << name
     self
   end
+
   def columns(column_names : Array(String))
     @column_names += column_names
     self
   end
+
   def columns(*args : String)
     args.each do |arg|
       case arg
@@ -25,14 +29,15 @@ struct CQL::Command::Insert < CQL::Command
     end
     self
   end
+
   def exec(args : Array(U)) forall U
-    sql = self.to_s
     @database.exec(self.to_s, args)
   end
+
   def exec(*args)
-    sql = self.to_s
     @database.exec(self.to_s, *args)
   end
+
   def to_s(io)
     @database.dialect.insert_statement(io, table_name, column_names)
   end

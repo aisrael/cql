@@ -1,11 +1,10 @@
 # A SQL "dialect". Meant to be extended by concrete implementations.
 abstract class CQL::Dialect
-
   VALID_TABLE_NAME_PATTERN = /^[[:alpha:]][[:alpha:]0-9_]+$/
 
   SUPPORTED_DIALECTS = {
-    "postgres" => CQL::Dialect::PostgreSQL::INSTANCE,
-    "postgresql" => CQL::Dialect::PostgreSQL::INSTANCE
+    "postgres"   => CQL::Dialect::PostgreSQL::INSTANCE,
+    "postgresql" => CQL::Dialect::PostgreSQL::INSTANCE,
   }
 
   # Returns a CQL::Dialect instance based on the URL scheme in ENV["DATABASE_URL"]
