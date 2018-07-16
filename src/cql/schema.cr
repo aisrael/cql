@@ -12,12 +12,10 @@ struct CQL::Schema
         raise ArgumentError.new %(Unsupported class #{column_type.to_s}!)
       end
     end
+    @select = CQL::Command::Select.new(@database, @table_name, @columns.keys.map(&.to_s))
   end
 
-  def select : CQL::Command::Select
-    self.select(@columns.keys.map(&.to_s))
-  end
-
+  getter :select
 
   def select(*args : String) : CQL::Command::Select
     select_expressions = [] of String
@@ -26,7 +24,11 @@ struct CQL::Schema
   end
 
   def select(select_expressions : ColumnNames) : CQL::Command::Select
-    @select ||= CQL::Command::Select.new(@database, @table_name, select_expressions)
+    CQL::Command::Select.new(@database, @table_name, select_expressions)
+  end
+
+  def where(**where_clause)
+    @select.where(**where_clause)
   end
 
 end

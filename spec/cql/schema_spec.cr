@@ -25,4 +25,14 @@ describe CQL::Schema do
       schema.select("name").to_s.should eq("SELECT name FROM users")
     end
   end
+  describe "where" do
+    it "returns a CQL::Command::Select" do
+      schema = CQL::Schema.new(CQL.postgres, "users",
+        id: Int32,
+        name: String
+      )
+      where_id_eq_1 = schema.where(id: 1)
+      where_id_eq_1.should be_a(CQL::Command::Select)
+    end
+  end
 end
