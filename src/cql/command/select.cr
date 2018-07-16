@@ -4,26 +4,32 @@ struct CQL::Command::Select < CQL::Command
   def initialize(@database : CQL::Database,
                  @table_name : String,
                  @column_names = [] of String,
-                 @where = {} of (String | Symbol) => CQL::Type)
+                 @where : WhereClause? = nil)
     super(@database)
   end
 
-  def columns(*new_column_names : String)
+  def columns(*column_names : String)
     # Make a new Array(String) to preserve immutability
-    column_names = [] of String
-    column_names.concat(@column_names)
-    new_column_names.each { |column_name| column_names << column_name }
-    Select.new(@database, @table_name, column_names, @where)
+    new_column_names = [] of String + @column_names
+    column_names.each { |column_name| new_column_names << column_name }
+    Select.new(@database, @table_name, new_column_names, @where)
   end
 
-  def where(**new_where)
-    where = {} of (String | Symbol) => CQL::Type
-    @where.each { |k, v| where[k] = v }
-    new_where.each { |k, v| where[k] = v }
-    Select.new(@database, @table_name, @column_names, where)
+  def where(**where)
+    new_where = {} of (String | Symbol) => CQL::Type
+    if _where = @where
+      _where.each { |k, v| new_where[k] = v }
+    end
+    where.each { |k, v| new_where[k] = v }
+    Select.new(@database, @table_name, @column_names, new_where)
   end
 
   def to_s(io)
-    @database.dialect.select_statement(io, table_name, @column_names, @where.keys.map(&.to_s))
+    where_column_names = if w = @where
+                           w.keys.map(&.to_s)
+                         else
+                           [] of String
+                         end
+    @database.dialect.select_statement(io, table_name, @column_names, where_column_names)
   end
 end

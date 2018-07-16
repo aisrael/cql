@@ -4,11 +4,12 @@ require "uri"
 module CQL
   private DATABASE_URL_KEY = "DATABASE_URL"
 
-  # Aliases for common parameters
-  alias ColumnNames = Array(String)
-
   # Value types
   alias Type = Int8 | Int32 | Int64 | String
+
+  # Aliases for common parameters
+  alias ColumnNames = Array(String)
+  alias WhereClause = Hash(String | Symbol, Type)
 
   # Column types
   enum ColumnType
