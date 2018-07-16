@@ -1,16 +1,24 @@
 require "../db_helper"
 
+struct User
+  getter :id, :name
+  def initialize(@id : Int32, @name : String)
+  end
+end
+
 describe CQL::Schema do
   it "works" do
     DB.open(DATABASE_URL) do |db|
       db.exec("CREATE TABLE users (id INTEGER, name VARCHAR(80));")
     end
 
-    schema = CQL::Schema.new(CQL.postgres, "users",
-      id: Int32,
-      name: String
+    users_table = CQL::Schema.new(CQL.postgres, "users",
+    id: Int32,
+    name: String
     )
-    schema.select.to_s.should eq("SELECT id, name FROM users")
+    users_table.count.should eq(0)
+    users_table.insert.values("test")
+    users_table.count.should eq(1)
   ensure
     DB.open(DATABASE_URL) do |db|
       db.exec("DROP TABLE IF EXISTS foobar;")
@@ -33,6 +41,17 @@ describe CQL::Schema do
       )
       where_id_eq_1 = schema.where(id: 1)
       where_id_eq_1.should be_a(CQL::Command::Select)
+      where_id_eq_1.to_s.should eq("SELECT id, name FROM users WHERE id = $1")
+    end
+  end
+  describe "insert" do
+    it "generates the correct SQL" do
+      schema = CQL::Schema.new(CQL.postgres, "users",
+        id: Int32,
+        name: String
+      )
+
+      schema.insert.to_s.should eq("INSERT INTO users (name) VALUES ($1)")
     end
   end
 end

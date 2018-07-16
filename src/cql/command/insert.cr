@@ -26,6 +26,10 @@ struct CQL::Command::Insert < CQL::Command
     @database.exec(self.to_s, args)
   end
 
+  def values(*args)
+    @database.exec(self.to_s, *args)
+  end
+
   def exec(*args)
     @database.exec(self.to_s, *args)
   end

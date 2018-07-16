@@ -12,10 +12,16 @@ struct CQL::Schema
         raise ArgumentError.new %(Unsupported class #{column_type.to_s}!)
       end
     end
-    @select = CQL::Command::Select.new(@database, @table_name, @columns.keys.map(&.to_s))
+    column_names = @columns.keys.map(&.to_s)
+    @select = CQL::Command::Select.new(@database, @table_name, column_names)
+    @insert = CQL::Command::Insert.new(@database, @table_name, column_names.reject {|s| s == "id"})
   end
 
-  getter :select
+  getter :select, :insert
+
+  def count : Int64
+    CQL::Command::Count.new(@database, @table_name).as_i64
+  end
 
   def select(*args : String) : CQL::Command::Select
     select_expressions = [] of String
