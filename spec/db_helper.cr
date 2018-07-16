@@ -1,6 +1,7 @@
 require "pg"
 require "spec"
 require "../src/cql"
+require "./spec_helper"
 
 unless ENV.has_key?("DATABASE_URL")
   STDERR.puts "$DATABASE_URL not defined"
