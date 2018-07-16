@@ -2,6 +2,7 @@ require "../db_helper"
 
 struct User
   getter :id, :name
+
   def initialize(@id : Int32, @name : String)
   end
 end
@@ -9,15 +10,16 @@ end
 describe CQL::Schema do
   it "works" do
     DB.open(DATABASE_URL) do |db|
-      db.exec("CREATE TABLE users (id INTEGER, name VARCHAR(80));")
+      db.exec("CREATE TABLE users (id SERIAL, name VARCHAR(80));")
     end
 
-    users_table = CQL::Schema.new(CQL.postgres, "users",
-    id: Int32,
-    name: String
+    users_table = CQL::Schema.new(CQL.postgres, User, "users",
+      id: Int32,
+      name: String
     )
     users_table.count.should eq(0)
     users_table.insert.values("test")
+    users = users_table.all
     users_table.count.should eq(1)
   ensure
     DB.open(DATABASE_URL) do |db|
@@ -26,7 +28,7 @@ describe CQL::Schema do
   end
   describe "select" do
     it "supports narrowing the column names" do
-      schema = CQL::Schema.new(CQL.postgres, "users",
+      schema = CQL::Schema.new(CQL.postgres, User, "users",
         id: Int32,
         name: String
       )
@@ -35,7 +37,7 @@ describe CQL::Schema do
   end
   describe "where" do
     it "returns a CQL::Command::Select" do
-      schema = CQL::Schema.new(CQL.postgres, "users",
+      schema = CQL::Schema.new(CQL.postgres, User, "users",
         id: Int32,
         name: String
       )
@@ -46,7 +48,7 @@ describe CQL::Schema do
   end
   describe "insert" do
     it "generates the correct SQL" do
-      schema = CQL::Schema.new(CQL.postgres, "users",
+      schema = CQL::Schema.new(CQL.postgres, User, "users",
         id: Int32,
         name: String
       )

@@ -24,6 +24,11 @@ struct CQL::Command::Select < CQL::Command
     Select.new(@database, @table_name, @column_names, new_where)
   end
 
+  def all(&block : DB::ResultSet -> U) : Array(U) forall U
+    sql = self.to_s
+    @database.query_all(sql, &block)
+  end
+
   def to_s(io)
     where_column_names = if w = @where
                            w.keys.map(&.to_s)

@@ -1,9 +1,13 @@
 require "db"
 require "logging"
 
-struct CQL::Schema
+struct CQL::Schema(T)
   @columns = {} of (String | Symbol) => (Int8.class | Int16.class | Int32.class | Int64.class | String.class)
-  def initialize(@database : CQL::Database, @table_name : String, **columns)
+
+  @resultset_mapper : DB::ResultSet -> T
+  getter :resultset_mapper
+
+  def initialize(@database : CQL::Database, @klass : T.class, @table_name : String, **columns)
     columns.each do |column_name, column_type|
       case column_type
       when Int8.class, Int16.class, Int32.class, Int64.class, String.class
@@ -13,8 +17,14 @@ struct CQL::Schema
       end
     end
     column_names = @columns.keys.map(&.to_s)
+    column_types = @columns.values
     @select = CQL::Command::Select.new(@database, @table_name, column_names)
-    @insert = CQL::Command::Insert.new(@database, @table_name, column_names.reject {|s| s == "id"})
+    @insert = CQL::Command::Insert.new(@database, @table_name, column_names.reject { |s| s == "id" })
+    types = columns.values
+    @resultset_mapper = ->(rs : DB::ResultSet) do
+      values = rs.read(*types)
+      User.new(*values)
+    end
   end
 
   getter :select, :insert
@@ -23,9 +33,13 @@ struct CQL::Schema
     CQL::Command::Count.new(@database, @table_name).as_i64
   end
 
+  def all : Array(T)
+    self.select.all(&@resultset_mapper)
+  end
+
   def select(*args : String) : CQL::Command::Select
     select_expressions = [] of String
-    args.each {|s| select_expressions << s}
+    args.each { |s| select_expressions << s }
     self.select(select_expressions)
   end
 
@@ -36,5 +50,4 @@ struct CQL::Schema
   def where(**where_clause)
     @select.where(**where_clause)
   end
-
 end
