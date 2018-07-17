@@ -26,7 +26,32 @@ struct CQL::Command::Select < CQL::Command
 
   def all(&block : DB::ResultSet -> U) : Array(U) forall U
     sql = self.to_s
-    @database.query_all(sql, &block)
+    if where = @where
+      params = where.values
+      @database.query_all(sql, params, &block)
+    else
+      @database.query_all(sql, &block)
+    end
+  end
+
+  def one(&block : DB::ResultSet -> U) : U forall U
+    sql = self.to_s
+    if where = @where
+      params = where.values
+      @database.query_one(sql, params, &block)
+    else
+      @database.query_one(sql, &block)
+    end
+  end
+
+  def one?(&block : DB::ResultSet -> U) : U forall U
+    sql = self.to_s
+    if where = @where
+      params = where.values
+      @database.query_one?(sql, params, &block)
+    else
+      @database.query_one?(sql, &block)
+    end
   end
 
   def to_s(io)

@@ -29,35 +29,25 @@ struct CQL::Schema(T)
       Selector.new(@database, @klass, @resultset_mapper, @table_name, @column_names, new_where)
     end
 
+    # Returns the CQL::Command::Select corresponding to this Selector
+    def to_select
+      @select ||= CQL::Command::Select.new(@database, @table_name, @column_names, @where)
+    end
+
     def sql
       self.to_s
     end
 
     def one : T
-      if where = @where
-        params = where.values
-        @database.query_one(sql, params, &@resultset_mapper)
-      else
-        @database.query_one(sql, &@resultset_mapper)
-      end
+      to_select.one(&@resultset_mapper)
     end
 
     def one? : T?
-      if where = @where
-        params = where.values
-        @database.query_one?(sql, params, &@resultset_mapper)
-      else
-        @database.query_one?(sql, &@resultset_mapper)
-      end
+      to_select.one?(&@resultset_mapper)
     end
 
     def all : Array(T)
-      if where = @where
-        params = where.values
-        @database.query_all(sql, params, &@resultset_mapper)
-      else
-        @database.query_all(sql, &@resultset_mapper)
-      end
+      to_select.all(&@resultset_mapper)
     end
 
     def delete : Int64
@@ -72,12 +62,7 @@ struct CQL::Schema(T)
     end
 
     def to_s(io)
-      where_column_names = if w = @where
-                             w.keys.map(&.to_s)
-                           else
-                             [] of String
-                           end
-      @database.dialect.select_statement(io, @table_name, @column_names, where_column_names)
+      to_select.to_s(io)
     end
   end
 
