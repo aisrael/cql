@@ -94,7 +94,7 @@ struct CQL::Schema(T)
     column_types = columns.values                 # Tuple(*.class)
     @resultset_mapper = ->(rs : DB::ResultSet) do
       values = rs.read(*column_types)
-      User.new(*values)
+      @klass.new(*values)
     end
     @selector = CQL::Schema::Selector(T).new(@database, @klass, @resultset_mapper, @table_name, column_names)
     @insert = CQL::Command::Insert.new(@database, @table_name, column_names.reject { |s| s == "id" })
