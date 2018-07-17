@@ -2,7 +2,7 @@ require "db"
 require "logging"
 
 struct CQL::Schema(T)
-  @column_names = {} of (String | Symbol) => (Int8.class | Int16.class | Int32.class | Int64.class | String.class)
+  @column_names = {} of (String | Symbol) => (Int8.class | Int16.class | Int32.class | Int64.class | String.class | Time.class)
 
   @resultset_mapper : DB::ResultSet -> T
   getter :resultset_mapper
@@ -69,7 +69,7 @@ struct CQL::Schema(T)
   def initialize(@database : CQL::Database, @klass : T.class, @table_name : String, **columns)
     columns.each do |column_name, column_type|
       case column_type
-      when Int8.class, Int16.class, Int32.class, Int64.class, String.class
+      when Int8.class, Int16.class, Int32.class, Int64.class, String.class, Time.class
         @column_names[column_name] = column_type
       else
         raise ArgumentError.new %(Unsupported class #{column_type.to_s}!)
