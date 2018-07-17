@@ -1,10 +1,19 @@
 struct CQL::Command::Delete < CQL::Command
-  include CQL::Command::WithWhereClause
   getter :table_name
 
-  @column_names = [] of String
-  def initialize(@database : CQL::Database, @table_name : String)
+  def initialize(@database : CQL::Database,
+                 @table_name : String,
+                 @where : WhereClause? = nil)
     super(@database)
+  end
+
+  def where(**where)
+    new_where = {} of (String | Symbol) => CQL::Type
+    if _where = @where
+      _where.each { |k, v| new_where[k] = v }
+    end
+    where.each { |k, v| new_where[k] = v }
+    Delete.new(@database, @table_name, new_where)
   end
 
   def exec(args : Array(U)) forall U
@@ -12,13 +21,20 @@ struct CQL::Command::Delete < CQL::Command
     debug sql
     @database.exec(self.to_s, args)
   end
+
   def exec(*args)
     sql = self.to_s
     debug sql
     @database.exec(self.to_s, *args)
   end
+
   def to_s(io)
-    @database.dialect.delete_statement(io, table_name, @where.keys)
+    where_column_names = if w = @where
+                           w.keys.map(&.to_s)
+                         else
+                           [] of String
+                         end
+    @database.dialect.delete_statement(io, table_name, where_column_names)
     io << ";"
   end
 end

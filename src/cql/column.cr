@@ -11,6 +11,7 @@ struct CQL::Column
     default: CQL::Type?,
     references: String?
   )
+
   def initialize(@name : String,
                  @type : CQL::ColumnType,
                  @size : Int32? = nil,
@@ -20,6 +21,7 @@ struct CQL::Column
                  @default : CQL::Type? = nil,
                  @references : String? = nil)
   end
+
   def to_s(io)
     parts = [@name]
     case @type
