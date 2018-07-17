@@ -29,9 +29,46 @@ struct CQL::Schema(T)
       Selector.new(@database, @klass, @resultset_mapper, @table_name, @column_names, new_where)
     end
 
+    def sql
+      self.to_s
+    end
+
+    def one : T
+      if where = @where
+        params = where.values
+        @database.query_one(sql, params, &@resultset_mapper)
+      else
+        @database.query_one(sql, &@resultset_mapper)
+      end
+    end
+
+    def one? : T?
+      if where = @where
+        params = where.values
+        @database.query_one?(sql, params, &@resultset_mapper)
+      else
+        @database.query_one?(sql, &@resultset_mapper)
+      end
+    end
+
     def all : Array(T)
-      sql = self.to_s
-      @database.query_all(sql, &@resultset_mapper)
+      if where = @where
+        params = where.values
+        @database.query_all(sql, params, &@resultset_mapper)
+      else
+        @database.query_all(sql, &@resultset_mapper)
+      end
+    end
+
+    def delete : Int64
+      delete = CQL::Command::Delete.new(@database, @table_name, @where)
+      exec_result = if where = @where
+        params = where.values
+        delete.exec(params)
+      else
+        delete.exec
+      end
+      exec_result.rows_affected
     end
 
     def to_s(io)

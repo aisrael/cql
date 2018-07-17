@@ -17,12 +17,27 @@ describe CQL::Schema do
       id: Int32,
       name: String
     )
+
     users_table.count.should eq(0)
     users_table.insert.values("test")
+    users_table.count.should eq(1)
+
     users = users_table.all
     users.first.id.should eq(1)
     users.first.name.should eq("test")
-    users_table.count.should eq(1)
+
+    user_id_1 = users_table.where(id: 1).one
+    user_id_1.id.should eq(1)
+    user_id_1.name.should eq("test")
+
+    users_named_test = users_table.where(name: "test").all
+    users_named_test.first.id.should eq(1)
+    users_named_test.first.name.should eq("test")
+
+    deleted = users_table.where(id: 1).delete
+    deleted.should eq(1)
+
+    users_table.count.should eq(0)
   ensure
     DB.open(DATABASE_URL) do |db|
       db.exec("DROP TABLE IF EXISTS foobar;")
