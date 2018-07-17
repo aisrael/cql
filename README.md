@@ -67,7 +67,7 @@ delete.exec             # => exec(sql, "test")
 #### Create Table
 
 ```crystal
-db.create_table("foobar").column("id", "INTEGER").exec
+db.create_table("foobar").column("id", CQL::INTEGER).exec
 ```
 
 #### Insert
