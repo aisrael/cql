@@ -20,6 +20,8 @@ describe CQL::Schema do
     users_table.count.should eq(0)
     users_table.insert.values("test")
     users = users_table.all
+    users.first.id.should eq(1)
+    users.first.name.should eq("test")
     users_table.count.should eq(1)
   ensure
     DB.open(DATABASE_URL) do |db|
@@ -36,13 +38,13 @@ describe CQL::Schema do
     end
   end
   describe "where" do
-    it "returns a CQL::Command::Select" do
+    it "returns a CQL::Schema::Selector(User)" do
       schema = CQL::Schema.new(CQL.postgres, User, "users",
         id: Int32,
         name: String
       )
       where_id_eq_1 = schema.where(id: 1)
-      where_id_eq_1.should be_a(CQL::Command::Select)
+      where_id_eq_1.should be_a(CQL::Schema::Selector(User))
       where_id_eq_1.to_s.should eq("SELECT id, name FROM users WHERE id = $1")
     end
   end
