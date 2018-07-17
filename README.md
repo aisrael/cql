@@ -4,6 +4,8 @@
 
 CQL is a SQL toolkit for Crystal, inspired by Ruby's [Sequel](https://github.com/jeremyevans/sequel) and Java's [jOOQ](https://www.jooq.org).
 
+NOTE: Currently only supports PostgreSQL, mainly. See #1
+
 ## Installation
 
 Add this to your application's `shard.yml`:
@@ -23,13 +25,13 @@ require "cql"
 ### Connect to a PostgreSQL database
 
 ```crystal
-db = CQL.postgres(DATABASE_URL)
+db = CQL.connect("postgres://postgres:@localhost/database")
 ```
 
-Or, if `$DATABASE_URL` is set, just
+Or, if the environment variable `DATABASE_URL` is set, just
 
 ```crystal
-db = CQL.database
+db = CQL.connect
 ```
 
 ### Using `CQL::Command` objects
@@ -37,26 +39,27 @@ db = CQL.database
 #### Create Table
 
 ```crystal
-create_table = CQL::Command::CreateTable.new(db, "foobar")
+create_table = CQL::Command::CreateTable.new(db, "users")
 create_table.column("id", CQL::SERIAL, null: false, primary_key: true)
 create_table.column("name", CQL::VARCHAR, size: 40, null: false, unique: true)
-create_table.exec
+sql = create_table.to_s # => "CREATE TABLE users (id SERIAL NOT NULL PRIMARY KEY, name VARCHAR(40) NOT NULL UNIQUE)"
+create_table.exec       # => exec(sql)
 ```
 
 #### Insert
 
 ```crystal
 insert = CQL::Command::Insert.new(db, "users").column("name")
-insert.to_s # => INSERT INTO users (name) VALUES ($1)
-insert.exec("test") # => exec("INSERT INTO users (name) VALUES ($1)", "test")
+sql = insert.to_s       # => "INSERT INTO users (name) VALUES ($1)"
+insert.exec("test")     # => exec(sql, "test")
 ```
 
 #### Delete
 
 ```crystal
 delete = CQL::Command::Delete.new(db, "users").where(name: "test")
-delete.to_s # => DELETE FROM users WHERE name = $1
-delete.exec # => exec(DELETE FROM users WHERE name = $1, "test")
+sql = delete.to_s       # => "DELETE FROM users WHERE name = $1"
+delete.exec             # => exec(sql, "test")
 ```
 
 ### Using `CQL::Database`
