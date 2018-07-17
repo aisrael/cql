@@ -63,11 +63,11 @@ struct CQL::Schema(T)
     def delete : Int64
       delete = CQL::Command::Delete.new(@database, @table_name, @where)
       exec_result = if where = @where
-        params = where.values
-        delete.exec(params)
-      else
-        delete.exec
-      end
+                      params = where.values
+                      delete.exec(params)
+                    else
+                      delete.exec
+                    end
       exec_result.rows_affected
     end
 
@@ -91,7 +91,7 @@ struct CQL::Schema(T)
       end
     end
     column_names = @column_names.keys.map(&.to_s) # Array(String)
-    column_types = columns.values            # Tuple(*.class)
+    column_types = columns.values                 # Tuple(*.class)
     @resultset_mapper = ->(rs : DB::ResultSet) do
       values = rs.read(*column_types)
       User.new(*values)
