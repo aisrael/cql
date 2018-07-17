@@ -1,4 +1,4 @@
-require "../../spec_helper"
+require "../../db_helper"
 
 describe CQL::Command::Select do
   it "can generate proper SQL" do
