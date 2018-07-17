@@ -82,10 +82,20 @@ struct CQL::Schema(T)
       @klass.new(*values)
     end
     @selector = CQL::Schema::Selector(T).new(@database, @klass, @resultset_mapper, @table_name, column_names)
-    @insert = CQL::Command::Insert.new(@database, @table_name, column_names.reject { |s| s == "id" })
   end
 
-  getter :selector, :insert
+  getter :selector
+
+  def insert
+    @insert ||= begin
+      column_names = @column_names.keys.map(&.to_s) # Array(String)
+      CQL::Command::Insert.new(@database, @table_name, column_names.reject { |s| s == "id" })
+    end
+  end
+
+  def insert(*column_names : String)
+    @database.insert(@table_name).columns(*column_names)
+  end
 
   def count : Int64
     CQL::Command::Count.new(@database, @table_name).as_i64
