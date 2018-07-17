@@ -6,6 +6,7 @@ struct CQL::Command::CreateTable < CQL::Command
   @constraints = [] of CQL::Table::TableConstraint
 
   VALID_TABLE_NAME_PATTERN = /^[[:alpha:]][[:alpha:]0-9_]+$/
+
   def initialize(@database : CQL::Database, @table_name : String)
     raise ArgumentError.new(%(Invalid table name "#{@table_name}")) unless @table_name =~ VALID_TABLE_NAME_PATTERN
     super(@database)
@@ -19,18 +20,19 @@ struct CQL::Command::CreateTable < CQL::Command
   end
 
   def column(name : String,
-    type : CQL::ColumnType,
-    size : Int32? = nil,
-    null : Bool? = nil,
-    unique : Bool? = nil)
+             type : CQL::ColumnType,
+             size : Int32? = nil,
+             null : Bool? = nil,
+             unique : Bool? = nil)
     @columns << CQL::Column.new(name: name,
-                                type: type,
-                                size: size,
-                                null: null,
-                                unique: unique
+      type: type,
+      size: size,
+      null: null,
+      unique: unique
     )
     self
   end
+
   def exec
     sql = to_s
     debug sql

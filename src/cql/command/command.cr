@@ -3,6 +3,8 @@ module CQL
     include Logging
     getter :database
 
+    alias WhereSpec = Hash(String | Symbol, CQL::Type)
+
     def initialize(@database : CQL::Database)
     end
 
@@ -15,10 +17,12 @@ module CQL
         @column_names << name
         self
       end
+
       def columns(column_names : Array(String))
         @column_names += column_names
         self
       end
+
       def columns(*args : String)
         args.each do |arg|
           case arg
@@ -43,6 +47,5 @@ module CQL
         self
       end
     end
-
   end
 end

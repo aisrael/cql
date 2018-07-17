@@ -1,13 +1,15 @@
 require "uri"
+
 # A SQL toolkit for Crystal
 module CQL
   private DATABASE_URL_KEY = "DATABASE_URL"
 
-  # Aliases for common parameters
-  alias ColumnNames = Array(String)
-
   # Value types
   alias Type = Int8 | Int32 | Int64 | String
+
+  # Aliases for common parameters
+  alias ColumnNames = Array(String)
+  alias WhereClause = Hash(String | Symbol, Type)
 
   # Column types
   enum ColumnType
@@ -19,17 +21,17 @@ module CQL
     TIMESTAMP
     VARCHAR
   end
-  BOOLEAN = ColumnType::BOOLEAN
-  CHAR = ColumnType::CHAR
-  INTEGER = ColumnType::INTEGER
-  SERIAL = ColumnType::SERIAL
-  SMALLINT = ColumnType::SMALLINT
+  BOOLEAN   = ColumnType::BOOLEAN
+  CHAR      = ColumnType::CHAR
+  INTEGER   = ColumnType::INTEGER
+  SERIAL    = ColumnType::SERIAL
+  SMALLINT  = ColumnType::SMALLINT
   TIMESTAMP = ColumnType::TIMESTAMP
-  VARCHAR = ColumnType::VARCHAR
+  VARCHAR   = ColumnType::VARCHAR
 
   KNOWN_DATABASES = {
-    "postgres" => CQL::Database::PostgreSQL,
-    "postgresql" => CQL::Database::PostgreSQL
+    "postgres"   => CQL::Database::PostgreSQL,
+    "postgresql" => CQL::Database::PostgreSQL,
   }
 
   # Returns a CQL::Database instance based on the URL scheme
