@@ -4,7 +4,7 @@
 
 CQL is a SQL toolkit for Crystal, inspired by Ruby's [Sequel](https://github.com/jeremyevans/sequel) and Java's [jOOQ](https://www.jooq.org).
 
-NOTE: Currently only supports PostgreSQL, mainly. See #1
+NOTE: Currently only supports PostgreSQL, mainly. See ticket [#1](https://github.com/aisrael/cql/issues/1)
 
 ## Installation
 
