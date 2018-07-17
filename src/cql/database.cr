@@ -42,7 +42,8 @@ abstract class CQL::Database
     CQL::Command::DeleteTable.new(self, table)
   end
 
-  def select_one(table_name : String) : CQL::Command::SelectOne
+  def select(table_name : String) : CQL::Command::Select
+    CQL::Command::Select.new(self, table_name)
   end
 
   def insert(table_name : String) : CQL::Command::Insert
