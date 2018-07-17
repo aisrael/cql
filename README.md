@@ -1,4 +1,4 @@
-![Build status](https://travis-ci.org/aisrael/cql.svg?branch=develop)
+[![Build Status](https://travis-ci.org/aisrael/cql.svg?branch=develop)](https://travis-ci.org/aisrael/cql)
 
 # cql
 
@@ -79,7 +79,7 @@ db.insert("foobar").column("id").exec(123)
 db.count("users").as_i64
 ```
 
-### Using `CQL::Schema` (see 
+### Using `CQL::Schema` (see
 
 ```crystal
 users_table = CQL::Schema.new(CQL.postgres, User, "users",
@@ -88,7 +88,7 @@ users_table = CQL::Schema.new(CQL.postgres, User, "users",
 )
 
 users_table.count                 # => 0
-users_table.insert.values("test") # => exec("INSERT INTO users (name) VALUES ($1)", 
+users_table.insert.values("test") # => exec("INSERT INTO users (name) VALUES ($1)",
 users_table.count                 # => 1
 
 users = users_table.all           # => query_all("SELECT id, name FROM users")
