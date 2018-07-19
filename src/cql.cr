@@ -1,4 +1,5 @@
 require "uri"
+require "./core_ext/*"
 
 # A SQL toolkit for Crystal
 module CQL
