@@ -71,7 +71,7 @@ module Inflector
     end
 
     def uncountable(word : String)
-      irregular(uncountable, uncountable)
+      irregular(word, word)
     end
 
     def irregular(singular : String, plural : String)
