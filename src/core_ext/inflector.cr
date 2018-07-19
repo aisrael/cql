@@ -30,7 +30,6 @@ module Inflector
   end
 
   class DefaultInflections < Inflections
-
     @plurals = [] of {Regex, String}
     @singulars = [] of {Regex, String}
 
@@ -84,7 +83,7 @@ module Inflector
         inflect.irregular(singular, plural)
       end
       {{ run("../../etc/read_as_hash", "uncountable") }}.each do |singular, _plural|
-        inflect.irregular(singular, singular)
+        inflect.uncountable(singular)
       end
     end
 
