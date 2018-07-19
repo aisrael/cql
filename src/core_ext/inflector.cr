@@ -18,7 +18,23 @@ module Inflector
       @@inflectors[locale] ||= DefaultInflections.new
     end
 
-    Inflector.inflections do |inflect|
+    @simple_singular_to_plural = {} of String => String
+    @simple_plural_to_singular = {} of String => String
+
+    abstract def plural(rule : String | Regex, replacement : String)
+    abstract def singular(rule : String | Regex, replacement : String)
+    abstract def uncountable(word : String)
+    abstract def irregular(singular : String, plural : String)
+
+    abstract def pluralize(singular : String) : String
+  end
+
+  class DefaultInflections < Inflections
+
+    @plurals = [] of {Regex, String}
+    @singulars = [] of {Regex, String}
+
+    Inflector.inflections(:en) do |inflect|
       inflect.plural(/(.*)wolf$/, "\\1wolves")
       inflect.plural(/(.*)ooth$/, "\\1eeth")
       inflect.plural(/(.*)elf$/, "\\1elves")
@@ -37,20 +53,6 @@ module Inflector
       inflect.plural(/(.+)is$/, "\\1es")
       inflect.plural(/(.+)y$/, "\\1ies")
     end
-
-    abstract def plural(rule : String | Regex, replacement : String)
-    abstract def singular(rule : String | Regex, replacement : String)
-    abstract def uncountable(word : String)
-    abstract def irregular(singular : String, plural : String)
-
-    abstract def pluralize(singular : String) : String
-  end
-
-  class DefaultInflections < Inflections
-    @plurals = [] of {Regex, String}
-    @singulars = [] of {Regex, String}
-    @simple_singular_to_plural = {} of String => String
-    @simple_plural_to_singular = {} of String => String
 
     def plural(rule : String | Regex, replacement : String)
       if rule.is_a?(String)
@@ -77,11 +79,17 @@ module Inflector
       @simple_plural_to_singular[plural] = singular
     end
 
-    @irregular : Hash(String, String) = {{ run("../../etc/read_as_hash", "irregular") }}
-    @uncountable : Hash(String, String) = {{ run("../../etc/read_as_hash", "uncountable") }}
+    Inflector.inflections(:en) do |inflect|
+      {{ run("../../etc/read_as_hash", "irregular") }}.each do |singular, plural|
+        inflect.irregular(singular, plural)
+      end
+      {{ run("../../etc/read_as_hash", "uncountable") }}.each do |singular, _plural|
+        inflect.irregular(singular, singular)
+      end
+    end
 
     def pluralize(singular : String) : String
-      if plural = @simple_singular_to_plural[singular]? || @irregular[singular]? || @uncountable[singular]?
+      if plural = @simple_singular_to_plural[singular]?
         return plural
       else
         rule = @plurals.find do |pattern, _replacement|
@@ -91,7 +99,7 @@ module Inflector
           pattern, replacement = rule
           return singular.gsub(pattern, replacement)
         end
-        "#{singular}s" # Default, English-rule
+        return "#{singular}s" # Default, English-rule
       end
     end
   end
