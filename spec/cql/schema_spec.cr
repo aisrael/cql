@@ -14,7 +14,7 @@ describe CQL::Schema do
       db.exec("CREATE TABLE users (id SERIAL, name VARCHAR(80));")
     end
 
-    users_table = CQL::Schema.new(CQL.postgres, User, "users",
+    users_table = CQL::Schema.new(CQL.postgres, User,
       id: Int32,
       name: String
     )

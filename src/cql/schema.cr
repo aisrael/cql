@@ -66,6 +66,22 @@ struct CQL::Schema(T)
     end
   end
 
+  # Create a Schema using the plural form of the given class name (using Inflector). For example:
+  #
+  #   CQL::Schema.new(CQL.connect, User, id: Int32, name: String)
+  #
+  # Which is equivalent to:
+  #
+  #   CQL::Schema.new(CQL.connect, User, "users", id: Int32, name: String)
+  #
+  def initialize(@database : CQL::Database, @klass : T.class, **columns)
+    initialize(@database, @klass, Inflector.pluralize(@klass.name.downcase), **columns)
+  end
+
+  # Create a Schema for the given class, specifying the table name, columns and their types.
+  #
+  #   CQL::Schema.new(CQL.connect, User, "users", id: Int32, name: String)
+  #
   def initialize(@database : CQL::Database, @klass : T.class, @table_name : String, **columns)
     columns.each do |column_name, column_type|
       case column_type
