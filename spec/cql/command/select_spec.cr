@@ -27,4 +27,25 @@ describe CQL::Command::Select do
   ensure
     CQL.connect.drop_table("users")
   end
+  describe "one?" do
+    it "works" do
+      db = CQL.connect
+      db.exec("DROP TABLE IF EXISTS users;")
+      db.create_table("users")
+        .column("id", CQL::SERIAL, null: false, primary_key: true)
+        .column("name", CQL::VARCHAR, null: false, size: 40).exec
+      db.insert("users").columns("name").exec("test")
+      sel = CQL::Command::Select.new(CQL.postgres, "users")
+        .columns("id", "name")
+        .where(id: 1)
+      user = sel.one? do |rs|
+        id, name = rs.read(Int32, String)
+        {id: id, name: name}
+      end
+      user.not_nil![:id].should eq(1)
+      user.not_nil![:name].should eq("test")
+    ensure
+      CQL.connect.drop_table("users")
+    end
+  end
 end

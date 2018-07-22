@@ -44,7 +44,7 @@ struct CQL::Command::Select < CQL::Command
     end
   end
 
-  def one?(&block : DB::ResultSet -> U | Nil) : U forall U
+  def one?(&block : DB::ResultSet -> U?) : U? forall U
     sql = self.to_s
     if where = @where
       params = where.values
