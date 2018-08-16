@@ -10,10 +10,11 @@ end
 describe CQL::Schema do
   it "works" do
     DB.open(DATABASE_URL) do |db|
+      db.exec("DROP TABLE IF EXISTS users;")
       db.exec("CREATE TABLE users (id SERIAL, name VARCHAR(80));")
     end
 
-    users_table = CQL::Schema.new(CQL.postgres, User, "users",
+    users_table = CQL::Schema.new(CQL.postgres, User,
       id: Int32,
       name: String
     )

@@ -23,12 +23,14 @@ struct CQL::Command::CreateTable < CQL::Command
              type : CQL::ColumnType,
              size : Int32? = nil,
              null : Bool? = nil,
-             unique : Bool? = nil)
+             unique : Bool? = nil,
+             primary_key : Bool? = nil)
     @columns << CQL::Column.new(name: name,
       type: type,
       size: size,
       null: null,
-      unique: unique
+      unique: unique,
+      primary_key: primary_key
     )
     self
   end

@@ -26,19 +26,24 @@ abstract class CQL::Database
 
   abstract def table_exists?(table_name : String) : Bool
 
-  def create_table(table : CQL::Table) : CQL::Command::CreateTable
-    CQL::Command::CreateTable.new(self, table)
-  end
-
   def create_table(table_name : String) : CQL::Command::CreateTable
     CQL::Command::CreateTable.new(self, table_name)
   end
 
-  def delete_table(table : CQL::Table) : CQL::Command::DeleteTable
+  def create_table(table : CQL::Table) : CQL::Command::CreateTable
+    CQL::Command::CreateTable.new(self, table)
+  end
+
+  def drop_table(table_name : String) : CQL::Command::DeleteTable
+    CQL::Command::DeleteTable.new(self, table_name)
+  end
+
+  def drop_table(table : CQL::Table) : CQL::Command::DeleteTable
     CQL::Command::DeleteTable.new(self, table)
   end
 
-  def select_one(table_name : String) : CQL::Command::SelectOne
+  def select(table_name : String) : CQL::Command::Select
+    CQL::Command::Select.new(self, table_name)
   end
 
   def insert(table_name : String) : CQL::Command::Insert

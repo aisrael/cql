@@ -12,4 +12,5 @@ before_script:
   - psql -c 'create database cql_test;' -U postgres
   - shards
 script:
+  - bin/ameba
   - crystal spec

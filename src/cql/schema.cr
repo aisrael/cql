@@ -2,7 +2,7 @@ require "db"
 require "logging"
 
 struct CQL::Schema(T)
-  @column_names = {} of (String | Symbol) => (Int8.class | Int16.class | Int32.class | Int64.class | String.class)
+  @column_names = {} of (String | Symbol) => (Int8.class | Int16.class | Int32.class | Int64.class | String.class | Time.class)
 
   @resultset_mapper : DB::ResultSet -> T
   getter :resultset_mapper
@@ -29,35 +29,25 @@ struct CQL::Schema(T)
       Selector.new(@database, @klass, @resultset_mapper, @table_name, @column_names, new_where)
     end
 
+    # Returns the CQL::Command::Select corresponding to this Selector
+    def to_select
+      @select ||= CQL::Command::Select.new(@database, @table_name, @column_names, @where)
+    end
+
     def sql
       self.to_s
     end
 
     def one : T
-      if where = @where
-        params = where.values
-        @database.query_one(sql, params, &@resultset_mapper)
-      else
-        @database.query_one(sql, &@resultset_mapper)
-      end
+      to_select.one(&@resultset_mapper)
     end
 
     def one? : T?
-      if where = @where
-        params = where.values
-        @database.query_one?(sql, params, &@resultset_mapper)
-      else
-        @database.query_one?(sql, &@resultset_mapper)
-      end
+      to_select.one?(&@resultset_mapper)
     end
 
     def all : Array(T)
-      if where = @where
-        params = where.values
-        @database.query_all(sql, params, &@resultset_mapper)
-      else
-        @database.query_all(sql, &@resultset_mapper)
-      end
+      to_select.all(&@resultset_mapper)
     end
 
     def delete : Int64
@@ -72,19 +62,30 @@ struct CQL::Schema(T)
     end
 
     def to_s(io)
-      where_column_names = if w = @where
-                             w.keys.map(&.to_s)
-                           else
-                             [] of String
-                           end
-      @database.dialect.select_statement(io, @table_name, @column_names, where_column_names)
+      to_select.to_s(io)
     end
   end
 
+  # Create a Schema using the plural form of the given class name (using Inflector). For example:
+  #
+  #   CQL::Schema.new(CQL.connect, User, id: Int32, name: String)
+  #
+  # Which is equivalent to:
+  #
+  #   CQL::Schema.new(CQL.connect, User, "users", id: Int32, name: String)
+  #
+  def initialize(@database : CQL::Database, @klass : T.class, **columns)
+    initialize(@database, @klass, Inflector.pluralize(@klass.name.downcase), **columns)
+  end
+
+  # Create a Schema for the given class, specifying the table name, columns and their types.
+  #
+  #   CQL::Schema.new(CQL.connect, User, "users", id: Int32, name: String)
+  #
   def initialize(@database : CQL::Database, @klass : T.class, @table_name : String, **columns)
     columns.each do |column_name, column_type|
       case column_type
-      when Int8.class, Int16.class, Int32.class, Int64.class, String.class
+      when Int8.class, Int16.class, Int32.class, Int64.class, String.class, Time.class
         @column_names[column_name] = column_type
       else
         raise ArgumentError.new %(Unsupported class #{column_type.to_s}!)
@@ -97,10 +98,20 @@ struct CQL::Schema(T)
       @klass.new(*values)
     end
     @selector = CQL::Schema::Selector(T).new(@database, @klass, @resultset_mapper, @table_name, column_names)
-    @insert = CQL::Command::Insert.new(@database, @table_name, column_names.reject { |s| s == "id" })
   end
 
-  getter :selector, :insert
+  getter :selector
+
+  def insert
+    @insert ||= begin
+      column_names = @column_names.keys.map(&.to_s) # Array(String)
+      CQL::Command::Insert.new(@database, @table_name, column_names.reject { |s| s == "id" })
+    end
+  end
+
+  def insert(*column_names : String)
+    @database.insert(@table_name).columns(*column_names)
+  end
 
   def count : Int64
     CQL::Command::Count.new(@database, @table_name).as_i64
