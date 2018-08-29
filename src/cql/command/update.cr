@@ -1,10 +1,16 @@
-struct CQL::Command::Update < CQL::Command
-  include CQL::Command::WithColumns
+struct CQL::Command::Update < CQL::Command::WithTableNameAndColumns
   include CQL::Command::WithWhereClause
-  getter :table_name
 
-  def initialize(@database : CQL::Database, @table_name : String)
-    super(@database)
+  def initialize(
+    @database : CQL::Database,
+    @table_name : String,
+    @column_names = [] of String, @where : WhereClause? = nil
+  )
+    super(@database, @table_name)
+  end
+
+  private def clone_with_where(where : WhereClause)
+    CQL::Command::Update.new(@database, @table_name, @column_names, where)
   end
 
   def exec(args : Array(U)) forall U
@@ -21,10 +27,10 @@ struct CQL::Command::Update < CQL::Command
 
   def to_s(io)
     dialect = @database.dialect
-    dialect.update_statement(io, table_name, column_names)
-    return if @where.empty?
-    io << " WHERE "
-    where_clause = dialect.column_equals_placeholders_for(@where.keys, column_names.size + 1).join(" AND ")
-    io << where_clause
+    if where = @where
+      dialect.update_statement(io, @table_name, column_names, where.keys.map(&.to_s))
+    else
+      dialect.update_statement(io, @table_name, column_names)
+    end
   end
 end

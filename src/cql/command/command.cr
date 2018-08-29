@@ -3,49 +3,51 @@ module CQL
     include Logging
     getter :database
 
-    alias WhereSpec = Hash(String | Symbol, CQL::Type)
-
     def initialize(@database : CQL::Database)
     end
 
-    module WithColumns
+    abstract struct WithTableName < CQL::Command
+      getter :table_name
+
+      VALID_TABLE_NAME_PATTERN = /^[[:alpha:]][[:alpha:]0-9_]+$/
+
+      def initialize(@database : CQL::Database, table_name : String)
+        raise ArgumentError.new(%(Invalid table name "#{table_name}")) unless table_name =~ VALID_TABLE_NAME_PATTERN
+        @table_name = table_name
+      end
+    end
+
+    abstract struct WithTableNameAndColumns < WithTableName
       getter :column_names
 
       @column_names = [] of String
 
       def column(name : String)
-        @column_names << name
-        self
+        self.class.new(@database, @table_name, @column_names + [name])
       end
 
       def columns(column_names : Array(String))
-        @column_names += column_names
-        self
+        self.class.new(@database, @table_name, @column_names.concat(column_names))
       end
 
       def columns(*args : String)
-        args.each do |arg|
-          case arg
-          when String
-            @column_names << arg
-          else
-            raise "Don't know how to handle column name of type #{arg.class}!"
-          end
-        end
-        self
+        columns(args.to_a)
       end
     end
 
     module WithWhereClause
       getter :where
-      @where = {} of String => CQL::Type
+      @where : WhereClause? = nil
 
       def where(**named_tuple)
+        where_clause = WhereClause.new
         named_tuple.each do |key, value|
-          @where[key.to_s] = value
+          where_clause[key.to_s] = value
         end
-        self
+        clone_with_where(where_clause)
       end
+
+      private abstract def clone_with_where(where : WhereClause)
     end
   end
 end

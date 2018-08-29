@@ -46,16 +46,13 @@ abstract class CQL::Dialect
 
   # TODO: Make abstract?
   def update_statement(io : IO, table_name : String, column_names : ColumnNames)
-    io << "UPDATE "
-    io << table_name
-    io << " SET "
-    io << column_equals_placeholders_for(column_names).join(", ")
+    io << "UPDATE " << table_name << " SET " << column_equals_placeholders_for(column_names).join(", ")
   end
 
-  def update_statement(io : IO, table_name : String, column_names : ColumnNames, where : ColumnNames)
-    io << "UPDATE " << table_name << " SET " << column_equals_placeholders_for(column_names).join(", ")
-    return if where.empty?
-    io << " WHERE " << column_equals_placeholders_for(where, column_names.size).join(" AND ")
+  def update_statement(io : IO, table_name : String, column_names : ColumnNames, where_column_names : ColumnNames)
+    update_statement(io, table_name, column_names)
+    return if where_column_names.empty?
+    io << " WHERE " << column_equals_placeholders_for(where_column_names, column_names.size + 1).join(" AND ")
   end
 
   def select_statement(io : IO, table_name : String, column_names : ColumnNames, where : ColumnNames)
@@ -68,11 +65,18 @@ abstract class CQL::Dialect
 
   abstract def column_equals_placeholders_for(column_names : ColumnNames, start_at = 1)
 
-  def delete_statement(io : IO, table_name : String, where : ColumnNames)
+  def delete_statement(io : IO, table_name : String, where_column_names : ColumnNames)
     io << "DELETE FROM "
     io << table_name
-    return if where.empty?
+    return if where_column_names.empty?
     io << " WHERE "
-    io << column_equals_placeholders_for(where).join(" AND ")
+    io << column_equals_placeholders_for(where_column_names).join(" AND ")
+  end
+
+  def count_statement(io : IO, table_name : String, where_column_names : ColumnNames = [] of String, count_what = "*")
+    io << "SELECT COUNT(" << count_what << ") FROM " << table_name
+    return if where_column_names.empty?
+    io << " WHERE "
+    io << column_equals_placeholders_for(where_column_names).join(" AND ")
   end
 end
