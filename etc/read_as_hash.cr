@@ -1,9 +1,11 @@
 list = ARGV[0]
 
 puts "Hash{"
-lines = File.each_line(File.join(__DIR__, "#{list}.txt")).map do |line|
-  singular, plural = line.split(/:\s+/)
-  %(  "#{singular}" => "#{plural}")
+File.open(File.join(__DIR__, "#{list}.txt")) do |file|
+  mapped = file.each_line.map do |line|
+    singular, plural = line.split(/:\s+/)
+    %(  "#{singular}" => "#{plural}")
+  end
+  puts mapped.join(",\n")
 end
-puts lines.join(",\n")
 puts "}"

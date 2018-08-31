@@ -1,16 +1,17 @@
-struct CQL::Command::Count < CQL::Command
+struct CQL::Command::Count < CQL::Command::WithTableName
   include CQL::Command::WithWhereClause
   getter :table_name
 
-  VALID_TABLE_NAME_PATTERN = /^[[:alpha:]][[:alpha:]0-9_]+$/
-
-  def initialize(@database : CQL::Database, @table_name : String)
-    raise ArgumentError.new(%(Invalid table name "#{@table_name}")) unless @table_name =~ VALID_TABLE_NAME_PATTERN
-    super(@database)
+  def initialize(@database : CQL::Database, @table_name : String, @where : WhereClause? = nil)
+    super(@database, @table_name)
   end
 
   def initialize(@database : CQL::Database, table : CQL::Table)
     initialize(@database, table.name)
+  end
+
+  private def clone_with_where(where : WhereClause)
+    self.class.new(@database, @table_name, where)
   end
 
   def as_i64
@@ -20,6 +21,11 @@ struct CQL::Command::Count < CQL::Command
 
   # TODO: Move to CQL::Dialect?
   def to_s(io)
-    io << "SELECT COUNT(*) FROM #{table_name};"
+    dialect = @database.dialect
+    if where = @where
+      dialect.count_statement(io, @table_name, where.keys.map(&.to_s))
+    else
+      dialect.count_statement(io, @table_name)
+    end
   end
 end

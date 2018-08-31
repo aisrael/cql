@@ -17,14 +17,10 @@ struct CQL::Command::Delete < CQL::Command
   end
 
   def exec(args : Array(U)) forall U
-    sql = self.to_s
-    debug sql
     @database.exec(self.to_s, args)
   end
 
   def exec(*args)
-    sql = self.to_s
-    debug sql
     @database.exec(self.to_s, *args)
   end
 

@@ -1,22 +1,25 @@
 name: cql
-version: 0.3
+version: 0.3.2
 
 authors:
   - Alistair A. Israel <aisrael@gmail.com>
 
-crystal: 0.25.1
+crystal: 0.26.1
 
 license: MIT
 
 dependencies:
   logging:
     github: aisrael/logging.cr
-    version: 0.1
+    version: 0.2
 
 development_dependencies:
+  ameba:
+    github: veelenga/ameba
+    version: 0.8.0
   pg:
     github: will/crystal-pg
     version: 0.15.0
-  ameba:
-    github: veelenga/ameba
-    version: 0.7.0
+  spec2:
+    github: waterlink/spec2.cr
+    version: ~> 0.9
