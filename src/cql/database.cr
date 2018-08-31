@@ -58,6 +58,13 @@ abstract class CQL::Database
     CQL::Command::Count.new(self, table_name)
   end
 
+  def exec(sql, args : Array(T)) : DB::ExecResult forall T
+    debug {
+      inject_args(sql, args)
+    }
+    db.exec(sql, args)
+  end
+
   def exec(sql, *args) : DB::ExecResult
     debug {
       inject_args(sql, *args)
@@ -81,17 +88,26 @@ abstract class CQL::Database
   end
 
   # TODO: Move somewhere else?
-  private def inject_args(sql, *args)
+  # TODO: Move somewhere else?
+  private def inject_args(sql, args : Array(T)) forall T
     sql.gsub(/\$[0-9]+/) do |s|
       offset = s[1..-1].to_i
-      val = args[offset - 1]
-      case val
-      when String
-        "'#{val}'"
+      if offset > 0 && offset <= args.size
+        val = args[offset - 1]
+        case val
+        when String
+          "'#{val}'"
+        else
+          val.to_s
+        end
       else
-        val.to_s
+        s
       end
     end
+  end
+
+  private def inject_args(sql, *args)
+    inject_args(sql, args.to_a)
   end
 
   # Directly query for zero or one records and map it (really just delegates to the internal @db)
